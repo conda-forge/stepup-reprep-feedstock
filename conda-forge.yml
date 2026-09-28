@@ -2,3 +2,9 @@ conda_build_tool: rattler-build
 noarch_platforms:
 - linux_64
 - osx_64
+github:
+  branch_name: main
+  tooling_branch_name: main
+conda_build:
+  error_overlinking: true
+conda_forge_output_validation: true
