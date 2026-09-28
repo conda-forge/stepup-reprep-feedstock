@@ -1,0 +1,4 @@
+conda_build_tool: rattler-build
+noarch_platforms:
+- linux_64
+- osx_64
