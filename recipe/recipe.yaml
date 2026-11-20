@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "4.0.2"
+  version: "4.1.0"
 
 package:
   name: stepup-reprep
@@ -9,12 +9,20 @@ package:
 
 source:
   url: https://pypi.org/packages/source/s/stepup-reprep/stepup_reprep-${{ version }}.tar.gz
-  sha256: deeef9fc32156f4e2088b474eedeb3014b489612061d5b21f3dde2efa8e0c9a5
+  sha256: fc6f2d497d7f96bce0a02d11f76a89df771c9a1bbc44be29b4aeac6f2516ec9f
 
 build:
   number: 0
   noarch: python
-  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script:
+    # Workaround for setuptools-scm 10 on Windows: when building from an sdist,
+    # it takes the file list from scm_file_list.json, whose "/"-separated paths
+    # setuptools fails to match against the "\"-separated package directory.
+    # As a result, package data (bibtex.lark, zenodo_vocabularies.yaml) is
+    # silently dropped. Without this file, setuptools falls back to the sdist's
+    # SOURCES.txt, which it normalizes correctly on all platforms.
+    - ${{ PYTHON }} -c "import pathlib; pathlib.Path('stepup_reprep.egg-info', 'scm_file_list.json').unlink(missing_ok=True)"
+    - ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   python:
     entry_points:
       - srr-add-notes-pdf = stepup.reprep.add_notes_pdf:main
@@ -47,7 +55,6 @@ requirements:
     - setuptools-scm >=8.1
     - pip
   run:
-    - __unix
     - python >=${{ python_min }}
     - attrs >=23.1.0
     - cattrs >=23.2.3
@@ -57,55 +64,55 @@ requirements:
     - lark >=1.3.1
     - markdown-it-py >=3.0.0
     - mdit-py-plugins >=0.4.2
+    - nbclient >=0.10
     - nbconvert >=7.17.1
     - numpy >=1.24.3
     - papermill >=2.6.0
-    - path >=16.14.0
     - pyiso4 >=0.1.6
-    - pymupdf >=1.24.3
+    # Upstream requires pymupdf-lite on PyPI. The conda-forge pymupdf package
+    # is the lite flavor: it installs the pymupdf_lite dist-info, without the
+    # pymupdf-layout, pymupdf4llm and onnxruntime dependencies of PyPI's pymupdf.
+    - pymupdf >=2.0
     - pyyaml >=6.0
+    - pyzmq >=25.0
     - requests >=2.33.0
     - scipy >=1.11.1
-    - stepup >=4.0.0,<5.0.0a1
+    - stepup >=4.1.0,<5.0.0a1
     - svg.path >=6.0
     - traitlets >=5.14.0
     - weasyprint >=69.0
 
 tests:
-  - if: unix
-    then:
-      python:
-        imports:
-          - stepup.reprep
-        pip_check: true
-        python_version:
-          - ${{ python_min }}.*
-          - "*"
-  - if: unix
-    then:
-      script:
-        - srr-add-notes-pdf --help
-        - srr-bibsane --help
-        - srr-cat-pdf --help
-        - srr-check-hrefs --help
-        - srr-check-inventory --help
-        - srr-compile-latex --help
-        - srr-compile-tectonic --help
-        - srr-compile-typst --help
-        - srr-convert-inkscape --help
-        - srr-convert-jupyter --help
-        - srr-convert-markdown --help
-        - srr-convert-weasyprint --help
-        - srr-execute-papermill --help
-        - srr-flatten-latex --help
-        - srr-make-inventory --help
-        - srr-normalize-pdf --help
-        - srr-nup-pdf --help
-        - srr-raster-pdf --help
-        - srr-sync-zenodo --help
-        - srr-unplot --help
-        - srr-wrap-git --help
-        - srr-zip-inventory --help
+  - python:
+      imports:
+        - stepup.reprep
+      pip_check: true
+      python_version:
+        - ${{ python_min }}.*
+        - "*"
+  - script:
+      - srr-add-notes-pdf --help
+      - srr-bibsane --help
+      - srr-cat-pdf --help
+      - srr-check-hrefs --help
+      - srr-check-inventory --help
+      - srr-compile-latex --help
+      - srr-compile-tectonic --help
+      - srr-compile-typst --help
+      - srr-convert-inkscape --help
+      - srr-convert-jupyter --help
+      - srr-convert-markdown --help
+      - srr-convert-weasyprint --help
+      - srr-execute-papermill --help
+      - srr-flatten-latex --help
+      - srr-make-inventory --help
+      - srr-normalize-pdf --help
+      - srr-nup-pdf --help
+      - srr-raster-pdf --help
+      - srr-sync-zenodo --help
+      - srr-unplot --help
+      - srr-wrap-git --help
+      - srr-zip-inventory --help
 
 about:
   summary: StepUp extension for Reproducible Reporting
