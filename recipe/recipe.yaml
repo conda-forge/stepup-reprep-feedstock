@@ -14,7 +14,15 @@ source:
 build:
   number: 0
   noarch: python
-  script: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  script:
+    # Workaround for setuptools-scm 10 on Windows: when building from an sdist,
+    # it takes the file list from scm_file_list.json, whose "/"-separated paths
+    # setuptools fails to match against the "\"-separated package directory.
+    # As a result, package data (bibtex.lark, zenodo_vocabularies.yaml) is
+    # silently dropped. Without this file, setuptools falls back to the sdist's
+    # SOURCES.txt, which it normalizes correctly on all platforms.
+    - ${{ PYTHON }} -c "import pathlib; pathlib.Path('stepup_reprep.egg-info', 'scm_file_list.json').unlink(missing_ok=True)"
+    - ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   python:
     entry_points:
       - srr-add-notes-pdf = stepup.reprep.add_notes_pdf:main
