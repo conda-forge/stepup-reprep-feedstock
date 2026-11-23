@@ -49,6 +49,7 @@ requirements:
   run:
     - python >=${{ python_min }}
     - attrs >=23.1.0
+    - beautifulsoup4 >=4.12.0
     - cattrs >=23.2.3
     - defusedxml >=0.7.0
     - idutils >=1.4.5
@@ -68,8 +69,7 @@ requirements:
     - pyyaml >=6.0
     - pyzmq >=25.0
     - requests >=2.33.0
-    - scipy >=1.11.1
-    - stepup >=4.1.0,<5.0.0a1
+    - stepup >=4.2.0,<5.0.0a1
     - svg.path >=6.0
     - traitlets >=5.14.0
     - weasyprint >=69.0
