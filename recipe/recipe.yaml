@@ -1,7 +1,7 @@
 schema_version: 1
 
 context:
-  version: "4.1.1"
+  version: "4.2.0"
 
 package:
   name: stepup-reprep
@@ -9,7 +9,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/s/stepup-reprep/stepup_reprep-${{ version }}.tar.gz
-  sha256: d9ca8a4c5daa34552f5fe122c046340ce7a1b88a5dd977eb2159de9c988b21f0
+  sha256: 9c609a2ff28b26d9781634b57d28e2591d710a4395795180ffef985fa109e953
 
 build:
   number: 0
